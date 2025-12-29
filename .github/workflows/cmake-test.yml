@@ -1,0 +1,47 @@
+name: CMake Build & Test
+
+on:
+  push:
+    branches: [ "main", "master", "develop" ]
+  pull_request:
+    branches: [ "main", "master", "develop" ]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    name: ${{ matrix.os }} / ${{ matrix.compiler }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            compiler: gcc-14
+            cxx: g++-14
+          - os: windows-latest
+            compiler: msvc
+            cxx: cl
+
+    steps:
+    - uses: actions/checkout@v4
+
+    # Ubuntu에서 최신 GCC 설치 (필요한 경우)
+    - name: Install GCC 14 (Ubuntu)
+      if: matrix.os == 'ubuntu-24.04'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc-14 g++-14
+        
+    - name: Configure CMake
+      env:
+        CXX: ${{ matrix.cxx }}
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - name: Test
+      working-directory: ${{github.workspace}}/build
+      run: ctest -C ${{env.BUILD_TYPE}} --output-on-failure

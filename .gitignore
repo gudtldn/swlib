@@ -26,8 +26,6 @@ install_manifest.txt
 CTestTestfile.cmake
 _deps/
 
-# Testing
-test/
 
 # macOS
 .DS_Store

@@ -24,13 +24,13 @@ public:
     {
         if constexpr (std::is_function_v<std::remove_pointer_t<std::decay_t<T>>>)
         {
-            constexpr auto signature = type_signature<T>();
+            constexpr auto signature = raw_type_name<T>();
             return type_id{ signature, signature };
         }
         else
         {
             using clean_type = std::remove_cvref_t<T>;
-            return type_id{ full_type_name<clean_type>(), type_signature<clean_type>() };
+            return type_id{ full_type_name<clean_type>(), raw_type_name<clean_type>() };
         }
     }
 

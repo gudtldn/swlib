@@ -45,13 +45,13 @@
 // -----------------------------------------------------------------------------
 // Compiler Detection
 // -----------------------------------------------------------------------------
-#if defined(_MSC_VER)
-    #define SW_COMPILER_MSVC true
-    #define SW_COMPILER_CLANG false
-    #define SW_COMPILER_GCC false
-#elif defined(__clang__)
+#if defined(__clang__)
     #define SW_COMPILER_MSVC false
     #define SW_COMPILER_CLANG true
+    #define SW_COMPILER_GCC false
+#elif defined(_MSC_VER)
+    #define SW_COMPILER_MSVC true
+    #define SW_COMPILER_CLANG false
     #define SW_COMPILER_GCC false
 #elif defined(__GNUC__)
     #define SW_COMPILER_MSVC false

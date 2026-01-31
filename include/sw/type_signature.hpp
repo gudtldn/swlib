@@ -11,7 +11,7 @@
 
 namespace sw
 {
-namespace details
+namespace internal
 {
 /** 문자열 앞뒤 공백 제거 */
 [[nodiscard]] consteval std::string_view trim_whitespace(std::string_view sv) noexcept
@@ -186,7 +186,7 @@ consteval std::string_view extract_type_name() noexcept
     return {};
 #endif
 }
-} // namespace details
+} // namespace internal
 
 /**
  * 컴파일러 시그니처에서 추출된 그대로의 타입 이름을 반환합니다. (예: "class sw::MyClass", "struct Foo")
@@ -195,7 +195,7 @@ consteval std::string_view extract_type_name() noexcept
 template <typename T>
 [[nodiscard]] consteval std::string_view raw_type_name() noexcept
 {
-    constexpr auto ret = details::extract_type_name<T>();
+    constexpr auto ret = internal::extract_type_name<T>();
 
     // IDE 버그 때문에 일단 주석
     // static_assert(!ret.empty(), "Failed to extract type name from type T");
@@ -210,12 +210,12 @@ template <typename T>
 template <typename T>
 [[nodiscard]] consteval std::string_view full_type_name() noexcept
 {
-    using CleanType = details::unwrap_type_t<T>;
-    constexpr auto raw_name = details::extract_type_name<CleanType>();
+    using CleanType = internal::unwrap_type_t<T>;
+    constexpr auto raw_name = internal::extract_type_name<CleanType>();
 
     // 선행 타입 키워드 ("class", "struct", "enum", "union") 제거
     constexpr std::array<std::string_view, 5> leading_keywords = { "class", "struct", "enum", "union", "typename" };
-    constexpr auto ret = details::remove_keywords(raw_name, leading_keywords);
+    constexpr auto ret = internal::remove_keywords(raw_name, leading_keywords);
 
     // IDE 버그 때문에 일단 주석
     // static_assert(!ret.empty(), "Failed to extract type name from type T");
@@ -231,6 +231,6 @@ template <typename T>
 [[nodiscard]] consteval std::string_view type_name() noexcept
 {
     constexpr auto full_name = full_type_name<T>();
-    return details::remove_namespace(full_name);
+    return internal::remove_namespace(full_name);
 }
 } // namespace sw

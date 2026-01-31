@@ -12,7 +12,7 @@
 
 namespace sw
 {
-namespace details
+namespace internal
 {
 // SBO(Small Buffer Optimization) 설정
 constexpr usize sbo_buffer_size = sizeof(void*) * 3;
@@ -178,7 +178,7 @@ public:
         using impl_type = callable_impl<decayed_type>;
 
         // SBO 조건 검사: 크기가 버퍼보다 작고, 이동 생성이 noexcept여야 함
-        constexpr bool use_sbo = (sizeof(impl_type) <= details::sbo_buffer_size)
+        constexpr bool use_sbo = (sizeof(impl_type) <= internal::sbo_buffer_size)
             && std::is_nothrow_move_constructible_v<decayed_type>;
 
         if constexpr (use_sbo)
@@ -249,7 +249,7 @@ private:
     union func_storage_t
     {
         callable_base* heap_storage;
-        alignas(details::sbo_align) u8 sbo_storage[details::sbo_buffer_size];
+        alignas(internal::sbo_align) u8 sbo_storage[internal::sbo_buffer_size];
     } storage;
 
     callable_base* callable = nullptr;

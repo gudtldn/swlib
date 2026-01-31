@@ -7,7 +7,7 @@
 
 namespace sw
 {
-namespace details
+namespace internal
 {
 /**
  * TupleLike에 포함된 모든 타입을 템플릿 파라미터 팩 `Ts...`로 추출(unpack)합니다.
@@ -73,7 +73,7 @@ struct flatten_impl<ResultTuple, InputTuple<Ts...>>
     // 내부 요소들을 flatten 하고, 그 결과 타입들을 tuple_cat으로 합침
     using type = tuple_cat_t<typename flatten_impl<ResultTuple, Ts>::type...>;
 };
-} // namespace details
+} // namespace internal
 
 /**
  * 튜플이나 함수 시그니처에서 타입들을 추출하여 람다의 템플릿 인자로 전달합니다.
@@ -96,7 +96,7 @@ struct flatten_impl<ResultTuple, InputTuple<Ts...>>
 template <typename TupleLike, typename Fn>
 constexpr auto unpack_types(Fn&& func)
 {
-    return details::unpack_impl<TupleLike>::apply(std::forward<Fn>(func));
+    return internal::unpack_impl<TupleLike>::apply(std::forward<Fn>(func));
 }
 
 /**
@@ -107,11 +107,11 @@ constexpr auto unpack_types(Fn&& func)
  * @endcode
  */
 template <typename Tuple, template <typename...> typename Target>
-using rebind_t = details::rebind_impl<Tuple>::template to<Target>;
+using rebind_t = internal::rebind_impl<Tuple>::template to<Target>;
 
 /** 여러 튜플 타입을 하나로 합친 타입을 반환합니다. */
 template <typename... Tuples>
-using tuple_cat_t = details::tuple_cat_t<Tuples...>;
+using tuple_cat_t = internal::tuple_cat_t<Tuples...>;
 
 /**
  * 중첩된 튜플을 평탄화(Flatten)합니다.
@@ -121,5 +121,5 @@ using tuple_cat_t = details::tuple_cat_t<Tuples...>;
  * @endcode
  */
 template <typename T, template <typename...> typename ResultTupleLike = std::tuple>
-using flatten_tuple_t = details::flatten_impl<ResultTupleLike, T>::type;
+using flatten_tuple_t = internal::flatten_impl<ResultTupleLike, T>::type;
 } // namespace sw

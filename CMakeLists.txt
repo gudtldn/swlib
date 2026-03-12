@@ -18,9 +18,12 @@ add_library(swlib STATIC
 
 # C++ 표준 설정
 set_target_properties(swlib PROPERTIES
-        CXX_STANDARD 23
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS OFF
+)
+
+target_compile_features(swlib PUBLIC
+        cxx_std_23
 )
 
 # Include 경로 설정

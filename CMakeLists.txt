@@ -1,13 +1,8 @@
 cmake_minimum_required(VERSION 3.28)
 project(swlib
-        VERSION 0.1
+        VERSION 0.1.0
         LANGUAGES CXX
 )
-
-# C++ 표준 설정
-set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
 
 # src 폴더 아래의 모든 .cpp 찾기
 file(GLOB_RECURSE SW_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
@@ -21,6 +16,13 @@ add_library(swlib STATIC
         ${SW_HEADERS}
 )
 
+# C++ 표준 설정
+set_target_properties(swlib PROPERTIES
+        CXX_STANDARD 23
+        CXX_STANDARD_REQUIRED ON
+        CXX_EXTENSIONS OFF
+)
+
 # Include 경로 설정
 target_include_directories(swlib PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -29,16 +31,21 @@ target_include_directories(swlib PUBLIC
 # 컴파일러 옵션 설정
 if (MSVC)
     target_compile_options(swlib PRIVATE
-            /Zc:preprocessor # MSVC 전처리기 최신 표준 기능을 활성화
-            /Zc:__cplusplus  # __cplusplus 매크로가 올바른 버전을 반환하도록 수정
-            /utf-8           # UTF-8 인코딩 사용
-            /W4 /permissive- # 컴파일러 경고 옵션
+            /utf-8           # 소스/실행 파일 인코딩을 UTF-8로 사용
+            /permissive-     # MSVC 비표준 확장 끄기
+            /Zc:preprocessor # MSVC 전처리기가 표준을 준수하도록 설정
+            /Zc:__cplusplus  # 표준 __cplusplus 버전을 사용
+            /W4              # 경고 수준을 최고 수준으로 설정
     )
 else ()
     target_compile_options(swlib PRIVATE
-            -finput-charset=UTF-8
-            -fexec-charset=UTF-8
-            -Wall -Wextra -Wpedantic
+            -finput-charset=UTF-8 # 소스 파일 인코딩을 UTF-8로 설정
+            -fexec-charset=UTF-8  # 실행 파일 문자열 인코딩을 UTF-8로 설정
+
+            -pedantic             # 비표준 문법 경고 (MSVC /permissive- 대응)
+
+            -Wall -Wextra         # 일반적인 모든 경고와 추가적인 경고까지 활성화
+
     )
 endif ()
 
